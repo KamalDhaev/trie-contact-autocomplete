@@ -9,6 +9,9 @@ class Trie:
         self.root = TrieNode()
 
     # Insert a contact
+    # Time Complexity: O(L)
+    # Space Complexity: O(L) worst-case additional space for new nodes
+    # L = length of the contact name
     def insert(self, word):
         word = word.strip().lower()
 
@@ -26,6 +29,9 @@ class Trie:
         node.is_end_of_word = True
 
     # Search for a complete contact
+    # Time Complexity: O(L)
+    # Auxiliary Space: O(1) iterative search
+    # L = length of the contact name
     def search(self, word):
         word = word.strip().lower()
 
@@ -43,6 +49,9 @@ class Trie:
         return node.is_end_of_word
 
     # Find the node corresponding to a prefix
+    # Time Complexity: O(P)
+    # Auxiliary Space: O(1)
+    # P = length of the prefix
     def find_prefix_node(self, prefix):
         node = self.root
 
@@ -55,6 +64,10 @@ class Trie:
         return node
 
     # Collect complete words below a node
+    # Time Complexity: O(S) for the explored subtree,
+    # excluding the cost of constructing longer strings
+    # Recursive auxiliary space: O(H)
+    # S = number of nodes explored; H = maximum traversal depth
     def collect_words(self, node, prefix, results):
         if node.is_end_of_word:
             results.append(prefix)
@@ -63,6 +76,8 @@ class Trie:
             self.collect_words(child, prefix + char, results)
 
     # Generate autocomplete suggestions
+    # Time Complexity: O(P + S), excluding string-construction costs
+    # P = prefix length; S = number of nodes explored
     def autocomplete(self, prefix):
         prefix = prefix.strip().lower()
         node = self.find_prefix_node(prefix)
@@ -76,6 +91,9 @@ class Trie:
         return results
 
     # Delete a contact
+    # Time Complexity: O(L)
+    # Recursive auxiliary space: O(L)
+    # L = length of the contact name
     def delete(self, word):
         word = word.strip().lower()
 
@@ -98,6 +116,8 @@ class Trie:
         return True
 
     # Display all contacts
+    # Time Complexity: O(C), excluding string-construction costs
+    # C = total number of stored characters/nodes, up to constant factors
     def display_all(self):
         results = []
         self.collect_words(self.root, "", results)
