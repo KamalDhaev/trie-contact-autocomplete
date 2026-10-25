@@ -2,22 +2,23 @@ class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end_of_word = False
+        self.original_word = None
 
 
 class Trie:
     def __init__(self):
         self.root = TrieNode()
 
-    # Insert a contact
+    # Insert a contact while preserving its original capitalization
     # Time Complexity: O(L)
-    # Space Complexity: O(L) worst-case additional space for new nodes
-    # L = length of the contact name
+    # Space Complexity: O(L) worst case for newly created nodes
     def insert(self, word):
-        word = word.strip().lower()
+        original_word = word.strip()
 
-        if not word:
+        if not original_word:
             return
 
+        word = original_word.lower()
         node = self.root
 
         for char in word:
@@ -26,12 +27,14 @@ class Trie:
 
             node = node.children[char]
 
-        node.is_end_of_word = True
+        if node.is_end_of_word:
+            return
 
-    # Search for a complete contact
+        node.is_end_of_word = True
+        node.original_word = original_word
+    # Search for a complete contact (case-insensitive)
     # Time Complexity: O(L)
-    # Auxiliary Space: O(1) iterative search
-    # L = length of the contact name
+    # Auxiliary Space: O(1)
     def search(self, word):
         word = word.strip().lower()
 
@@ -63,14 +66,12 @@ class Trie:
 
         return node
 
-    # Collect complete words below a node
-    # Time Complexity: O(S) for the explored subtree,
-    # excluding the cost of constructing longer strings
-    # Recursive auxiliary space: O(H)
-    # S = number of nodes explored; H = maximum traversal depth
+    # Collect contacts while preserving original capitalization
+    # Time Complexity: O(S), excluding string-construction costs
+    # Auxiliary Space: O(H) for recursion
     def collect_words(self, node, prefix, results):
         if node.is_end_of_word:
-            results.append(prefix)
+            results.append(node.original_word)
 
         for char, child in sorted(node.children.items()):
             self.collect_words(child, prefix + char, results)
@@ -80,6 +81,10 @@ class Trie:
     # P = prefix length; S = number of nodes explored
     def autocomplete(self, prefix):
         prefix = prefix.strip().lower()
+
+        if not prefix:
+            return self.display_all()
+
         node = self.find_prefix_node(prefix)
 
         if node is None:
@@ -87,33 +92,38 @@ class Trie:
 
         results = []
         self.collect_words(node, prefix, results)
-
         return results
-
-    # Delete a contact
+    # Delete a contact (case-insensitive)
     # Time Complexity: O(L)
-    # Recursive auxiliary space: O(L)
-    # L = length of the contact name
+    # Auxiliary Space: O(L) for recursion
     def delete(self, word):
         word = word.strip().lower()
 
         if not word or not self.search(word):
             return False
 
-        def remove(node, word, depth):
+        def remove(node, depth):
             if depth == len(word):
                 node.is_end_of_word = False
-            else:
-                char = word[depth]
-                child = node.children[char]
+                node.original_word = None
+                return len(node.children) == 0
 
-                remove(child, word, depth + 1)
+            char = word[depth]
+            child = node.children[char]
 
-                if not child.children and not child.is_end_of_word:
-                    del node.children[char]
+            should_remove = remove(child, depth + 1)
 
-        remove(self.root, word, 0)
+            if should_remove:
+                del node.children[char]
+
+            return (
+                not node.is_end_of_word
+                and len(node.children) == 0
+            )
+
+        remove(self.root, 0)
         return True
+    
 
     # Display all contacts
     # Time Complexity: O(C), excluding string-construction costs
