@@ -9,7 +9,7 @@ class Trie:
     def __init__(self):
         self.root = TrieNode()
 
-    # Insert a contact while preserving its original capitalization
+    # Insert a contact while preserving original capitalization
     # Time Complexity: O(L)
     # Space Complexity: O(L) worst case for newly created nodes
     def insert(self, word):
@@ -32,7 +32,8 @@ class Trie:
 
         node.is_end_of_word = True
         node.original_word = original_word
-    # Search for a complete contact (case-insensitive)
+
+    # Search for a complete contact
     # Time Complexity: O(L)
     # Auxiliary Space: O(1)
     def search(self, word):
@@ -54,7 +55,6 @@ class Trie:
     # Find the node corresponding to a prefix
     # Time Complexity: O(P)
     # Auxiliary Space: O(1)
-    # P = length of the prefix
     def find_prefix_node(self, prefix):
         node = self.root
 
@@ -76,30 +76,28 @@ class Trie:
         for char, child in sorted(node.children.items()):
             self.collect_words(child, prefix + char, results)
 
-# Generate autocomplete suggestions
-# Time Complexity: O(P + S + K log K)
-# Auxiliary Space: O(K + H), excluding returned string construction
-# P = prefix length, S = nodes explored, K = suggestions, H = recursion depth
-def autocomplete(self, prefix):
-    prefix = prefix.strip().lower()
+    # Generate autocomplete suggestions
+    # Time Complexity: O(P + S + K log K)
+    # Auxiliary Space: O(K + H)
+    def autocomplete(self, prefix):
+        prefix = prefix.strip().lower()
 
-    if not prefix:
-        return sorted(self.display_all(), key=str.lower)
+        if not prefix:
+            return self.display_all()
 
-    node = self.find_prefix_node(prefix)
+        node = self.find_prefix_node(prefix)
 
-    if node is None:
-        return []
+        if node is None:
+            return []
 
-    results = []
-    self.collect_words(node, prefix, results)
+        results = []
+        self.collect_words(node, prefix, results)
 
-    return sorted(results, key=str.lower)
+        return sorted(results, key=str.lower)
 
-    # Delete a contact safely (case-insensitive)
+    # Delete a contact safely
     # Time Complexity: O(L)
     # Auxiliary Space: O(L) due to recursion
-    # L = length of the contact name
     def delete(self, word):
         if not isinstance(word, str):
             return False
@@ -130,15 +128,13 @@ def autocomplete(self, prefix):
 
         remove(self.root, 0)
         return True
-    
 
-    # Display all contacts
+    # Display all contacts alphabetically
     # Time Complexity: O(C), excluding string-construction costs
-    # C = total number of stored characters/nodes, up to constant factors
     def display_all(self):
         results = []
         self.collect_words(self.root, "", results)
-        return results
+        return sorted(results, key=str.lower)
 
 
 # Demonstration
@@ -157,9 +153,11 @@ if __name__ == "__main__":
 
     print("\nAutocomplete for 'Ar':", trie.autocomplete("Ar"))
 
-    print("\nDeleting Arun:", trie.delete("Arun"))
+    print("\nAutocomplete for empty prefix:", trie.autocomplete(""))
 
+    print("\nDeleting Arun:", trie.delete("Arun"))
     print("Search Arun after deletion:", trie.search("Arun"))
     print("Autocomplete for 'Ar':", trie.autocomplete("Ar"))
 
     print("\nDeleting Ramesh:", trie.delete("Ramesh"))
+
