@@ -76,23 +76,26 @@ class Trie:
         for char, child in sorted(node.children.items()):
             self.collect_words(child, prefix + char, results)
 
-    # Generate autocomplete suggestions
-    # Time Complexity: O(P + S), excluding string-construction costs
-    # P = prefix length; S = number of nodes explored
-    def autocomplete(self, prefix):
-        prefix = prefix.strip().lower()
+# Generate autocomplete suggestions
+# Time Complexity: O(P + S + K log K)
+# Auxiliary Space: O(K + H), excluding returned string construction
+# P = prefix length, S = nodes explored, K = suggestions, H = recursion depth
+def autocomplete(self, prefix):
+    prefix = prefix.strip().lower()
 
-        if not prefix:
-            return self.display_all()
+    if not prefix:
+        return sorted(self.display_all(), key=str.lower)
 
-        node = self.find_prefix_node(prefix)
+    node = self.find_prefix_node(prefix)
 
-        if node is None:
-            return []
+    if node is None:
+        return []
 
-        results = []
-        self.collect_words(node, prefix, results)
-        return results
+    results = []
+    self.collect_words(node, prefix, results)
+
+    return sorted(results, key=str.lower)
+
     # Delete a contact safely (case-insensitive)
     # Time Complexity: O(L)
     # Auxiliary Space: O(L) due to recursion
