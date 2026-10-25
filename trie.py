@@ -93,10 +93,14 @@ class Trie:
         results = []
         self.collect_words(node, prefix, results)
         return results
-    # Delete a contact (case-insensitive)
+    # Delete a contact safely (case-insensitive)
     # Time Complexity: O(L)
-    # Auxiliary Space: O(L) for recursion
+    # Auxiliary Space: O(L) due to recursion
+    # L = length of the contact name
     def delete(self, word):
+        if not isinstance(word, str):
+            return False
+
         word = word.strip().lower()
 
         if not word or not self.search(word):
